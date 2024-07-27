@@ -108,6 +108,8 @@ namespace api.Controllers
             return Ok("Student was edited");
          }
          return BadRequest("Unable to update data");
+
+         return Ok();
     }
     
     }
