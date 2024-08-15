@@ -10,6 +10,8 @@ import {
   VStack,
   Input,
   useToast,
+  FormControl,
+  FormLabel,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
@@ -83,50 +85,60 @@ const StudentForm = ({ isOpen, onClose, fetchStudent, currentData }: StudentForm
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Student</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg">
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Student Information</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel>Name</FormLabel>
               <Input
                 type="text"
                 placeholder="Name"
                 value={student.name}
                 onChange={(e) => setStudent({ ...student, name: e.target.value })}
               />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Address</FormLabel>
               <Input
                 type="text"
                 placeholder="Address"
                 value={student.address}
                 onChange={(e) => setStudent({ ...student, address: e.target.value })}
               />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Phone Number</FormLabel>
               <Input
                 type="number"
                 placeholder="Phone Number"
                 value={student.phoneNumber}
                 onChange={(e) => setStudent({ ...student, phoneNumber: e.target.value })}
               />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
               <Input
-                type="Text"
+                type="email"
                 placeholder="Email"
                 value={student.email}
                 onChange={(e) => setStudent({ ...student, email: e.target.value })}
               />
-            </VStack>
-          </ModalBody>
+            </FormControl>
+          </VStack>
+        </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme='red' mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button onClick={onSave} colorScheme='blue'>Save</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+        <ModalFooter>
+          <Button colorScheme="red" mr={3} onClick={onClose}>
+            Close
+          </Button>
+          <Button onClick={onSave} colorScheme="blue">Save</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

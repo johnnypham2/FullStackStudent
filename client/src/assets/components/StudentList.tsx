@@ -3,12 +3,9 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
-  TableContainer,
   Box,
   Flex,
   Heading,
@@ -24,6 +21,8 @@ import {
   PopoverBody,
   PopoverFooter,
   useToast,
+  IconButton,
+  Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -39,11 +38,9 @@ export interface Student {
 }
 
 const StudentList = () => {
-
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [currentData, setCurrentData] = useState<Student>({} as Student);
-
   const [data, setData] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -83,98 +80,104 @@ const StudentList = () => {
     setCurrentData({} as Student);
   };
 
-const handleDelete =(id:number) => {
-  axios.delete(BASE_URL+"Students/"+id).then(() => {
-    toast({
-      title:"Student Deleted",
-      isClosable:true,
-      duration: 5000
+  const handleDelete = (id: number) => {
+    axios.delete(BASE_URL + "Students/" + id).then(() => {
+      toast({
+        title: "Student Deleted",
+        isClosable: true,
+        duration: 5000,
+        status: "success",
+      });
+      fetchData();
+    }).catch(error => {
+      console.log(error)
     })
-    fetchData();
-  }).catch(error => {
-    console.log(error)
-  })
-}
-
+  }
 
   return (
-    <>
-      <Box shadow={"md"} rounded={"md"} m={32}>
-        <Flex
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          px={"5"}
-          mb={10}
-        >
-          <Heading>Students Directory</Heading>
-          <Button
-            onClick={handleAdd}
-            leftIcon={<AddIcon />}
-            colorScheme="blue"
-          >
-            Add Student
-          </Button>
+    <Box shadow="md" rounded="md" p={6} m="4" bg="white">
+      <Flex justifyContent="space-between" alignItems="center" mb={4}>
+        <Heading as="h2" size="lg">Students Directory</Heading>
+        <Button onClick={handleAdd} leftIcon={<AddIcon />} colorScheme="blue">
+          Add Student
+        </Button>
+      </Flex>
+
+      {isLoading ? (
+        <Flex justifyContent="center" alignItems="center">
+          <Spinner size="xl" />
         </Flex>
-
-        <TableContainer>
-          <Table variant="striped" colorScheme="grey">
-            <TableCaption>Imperial to metric conversion factors</TableCaption>
-            <Thead>
-              <Tr>
-                <Th>Student ID</Th>
-                <Th>Name</Th>
-                <Th>Address</Th>
-                <Th isNumeric>Phone Number</Th>
-                <Th>Email</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data.map((student: Student) => (
-                <Tr key={student.id}>
-                  <Td>{student.id}</Td>
-                  <Td>{student.name}</Td>
-                  <Td>{student.address}</Td>
-                  <Td>{student.phoneNumber}</Td>
-                  <Td>{student.email}</Td>
-                  <HStack>
-                    <EditIcon
-                      onClick={() => getStudent(student.id)}
-                      boxSize={22}
-                    />
-                    <Popover>
-                      <PopoverTrigger>
-                    <DeleteIcon boxSize={22} color={"red.400"} />
-                        
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverHeader>Confirmation!</PopoverHeader>
-                        <PopoverBody>
-                          Are you sure you want to Delete?
-                        </PopoverBody>
-                        <PopoverFooter>
-                          <Button colorScheme="red" variant={'outline'} onClick={() => handleDelete(student.id)}>Delete</Button>
-                        </PopoverFooter>
-                      </PopoverContent>
-                    </Popover>
-
-                  </HStack>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-        {isOpen && (
-          <StudentForm
-            currentData={currentData}
-            fetchStudent={fetchData}
-            isOpen={isOpen}
-            onClose={onClose}
-          />
-        )}
-      </Box>
-    </>
+      ) : (
+        <Table variant="simple" colorScheme="teal">
+        <Thead>
+          <Tr>
+            <Th color="blue">Student ID</Th>
+            <Th color="blue">Name</Th>
+            <Th color="blue">Address</Th>
+            <Th color="blue" isNumeric>Phone Number</Th>
+            <Th color="blue">Email</Th>
+            <Th color="blue">Actions</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {data.map((student: Student) => (
+            <Tr key={student.id}>
+              <Td color="gray.800">{student.id}</Td>
+              <Td color="gray.800">{student.name}</Td>
+              <Td color="gray.800">{student.address}</Td>
+              <Td color="gray.800" isNumeric>{student.phoneNumber}</Td>
+              <Td color="gray.800">{student.email}</Td>
+              <Td>
+                <HStack spacing={4}>
+                  <IconButton
+                    aria-label="Edit student"
+                    icon={<EditIcon />}
+                    onClick={() => getStudent(student.id)}
+                    colorScheme="blue"
+                  />
+                  <Popover>
+                    <PopoverTrigger>
+                      <IconButton
+                        aria-label="Delete student"
+                        icon={<DeleteIcon />}
+                        colorScheme="red"
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow />
+                      <PopoverCloseButton />
+                      <PopoverHeader>Confirmation!</PopoverHeader>
+                      <PopoverBody>
+                        Are you sure you want to delete this student?
+                      </PopoverBody>
+                      <PopoverFooter display="flex" justifyContent="flex-end">
+                        <Button
+                          colorScheme="red"
+                          variant="outline"
+                          onClick={() => handleDelete(student.id)}
+                        >
+                          Delete
+                        </Button>
+                      </PopoverFooter>
+                    </PopoverContent>
+                  </Popover>
+                </HStack>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+      
+      )}
+      {isOpen && (
+        <StudentForm
+          currentData={currentData}
+          fetchStudent={fetchData}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
+    </Box>
   );
 };
 
